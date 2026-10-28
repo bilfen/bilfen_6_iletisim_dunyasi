@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilfen Eğitim Kurumları - Bilişim Teknolojileri ve Yazılım Dersi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti for Gamification Rewards -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bilfen: {
+                            navy: '#0C2340',
+                            red: '#E31B23',
+                            blue: '#1D70B8',
+                            gold: '#FFB800',
+                            lightBg: '#F4F7FC'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        fredoka: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .card-bounce:hover {
+            transform: translateY(-6px);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .pulse-slow {
+            animation: pulse 2.5s infinite;
+        }
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
+        }
+        .animate-float {
+            animation: floatAnim 3s ease-in-out infinite;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-bilfen-lightBg text-slate-800 font-sans min-h-screen flex flex-col selection:bg-bilfen-red selection:text-white">
+
+    <!-- HEADER SECTION -->
+    <header class="bg-bilfen-navy text-white shadow-xl border-b-4 border-bilfen-red sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
+            <!-- Logo and Titles -->
+            <div class="flex items-center gap-4 text-center md:text-left">
+                <div class="w-14 h-14 bg-white rounded-2xl p-2 flex items-center justify-center shadow-lg border-2 border-bilfen-gold">
+                    <i class="fa-solid fa-graduation-cap text-bilfen-navy text-3xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-fredoka text-xl sm:text-2xl font-bold tracking-wide text-bilfen-gold flex items-center gap-2 justify-center md:justify-start">
+                        BİLFEN EĞİTİM KURUMLARI
+                    </h1>
+                    <h2 class="text-xs sm:text-sm font-semibold text-blue-200 uppercase tracking-widest">
+                        Bilişim Teknolojileri ve Yazılım Dersi - 6. Sınıf
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Student Profile & Score Header -->
+            <div class="flex items-center gap-4 bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-700">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-bilfen-red text-white font-bold flex items-center justify-center text-lg shadow-md">
+                        <i class="fa-solid fa-user-ninja"></i>
+                    </div>
+                    <div class="text-left">
+                        <span class="text-xs text-slate-400 block">Öğrenci Dedektif</span>
+                        <input id="studentNameInput" type="text" value="Geleceğin Yazılımcısı" class="bg-transparent text-white font-bold text-sm focus:outline-none focus:border-b border-bilfen-gold w-32 sm:w-40" title="İsminizi düzenleyebilirsiniz">
+                    </div>
+                </div>
+                <div class="h-8 w-px bg-slate-700"></div>
+                <!-- Total Score Badge -->
+                <div class="text-center px-2">
+                    <span class="text-xs text-slate-400 block">Toplanan XP</span>
+                    <span id="totalXpDisplay" class="font-fredoka text-xl text-bilfen-gold font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-star text-amber-400"></i> <span id="xpValue">0</span> / 600
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVIGATION BREADCRUMB BAR -->
+    <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-[76px] z-40">
+        <div class="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between">
+            <button onclick="showMainMenu()" class="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 bg-bilfen-navy text-white hover:bg-slate-800 transition-all shadow-sm">
+                <i class="fa-solid fa-house text-bilfen-gold"></i>
+                Ana Menü
+            </button>
+            <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                <span id="breadcrumbText" class="bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+                    <i class="fa-solid fa-compass text-bilfen-blue"></i> Ana Menü
+                </span>
+                <button id="navCongratsBtn" onclick="showCongratsPage()" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg border border-amber-300 shadow-sm hover:scale-105 transition-all items-center gap-1.5">
+                    <i class="fa-solid fa-trophy text-amber-900"></i> Başarı Karnesi
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- MAIN MENU DASHBOARD -->
+        <section id="main-menu" class="view-content block space-y-8">
+            <!-- Hero Welcome Banner -->
+            <div class="bg-gradient-to-r from-bilfen-navy via-slate-900 to-blue-950 text-white rounded-3xl p-6 md:p-8 shadow-xl border-2 border-slate-700 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-white text-[160px] font-bold pointer-events-none">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <div class="relative z-10 max-w-3xl space-y-4">
+                    <span class="bg-bilfen-gold text-slate-900 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-wider inline-flex items-center gap-1 shadow-md">
+                        <i class="fa-solid fa-rocket"></i> Öğrenme Yolculuğu
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-fredoka font-bold text-white leading-tight">
+                        İletişim Dünyasına Hoş Geldin!
+                    </h2>
+                    <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                        6. Sınıf Bilişim Teknolojileri ve Yazılım dersi öğrenme alanlarını keşfet, simülasyonları ve bulmacaları tamamla, XP puanları kazan!
+                    </p>
+
+                    <!-- Overall Progress Bar -->
+                    <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-2 mt-4 max-w-xl">
+                        <div class="flex justify-between items-center text-xs sm:text-sm font-semibold">
+                            <span class="text-slate-300 flex items-center gap-2">
+                                <i class="fa-solid fa-trophy text-bilfen-gold"></i> Toplam İlerleme
+                            </span>
+                            <span id="mainProgressText" class="text-bilfen-gold font-bold">0 / 600 XP (%0)</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-3.5 overflow-hidden p-0.5 border border-slate-600">
+                            <div id="mainProgressBar" class="bg-gradient-to-r from-bilfen-gold to-amber-400 h-full rounded-full transition-all duration-500 w-0"></div>
+                        </div>
+                    </div>
+
+                    <!-- Completed Banner Button -->
+                    <div id="heroCongratsBanner" class="hidden pt-2">
+                        <button onclick="showCongratsPage()" class="bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 text-slate-950 font-fredoka font-bold px-6 py-3 rounded-2xl shadow-xl hover:scale-105 transition-transform flex items-center gap-3 animate-bounce">
+                            <i class="fa-solid fa-crown text-2xl text-amber-900"></i>
+                            <div class="text-left">
+                                <span class="block text-xs uppercase tracking-wider font-extrabold text-amber-950">Tüm Bölümler Tamamlandı!</span>
+                                <span class="text-sm font-bold">Modül Başarı Dökümü ve Analizini Gör <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Cards Grid -->
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="font-fredoka text-xl sm:text-2xl font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-gamepad text-bilfen-red"></i> Öğrenme Modülleri
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500">Tamamlamak istediğin bölümün üzerine tıkla ve göreve başla. Tamamlanan bölümler kilitlenecektir.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Card 1 -->
+                    <div id="card-m1" onclick="openModule('module1')" class="bg-white rounded-2xl shadow-md border-2 border-slate-200 hover:border-bilfen-blue hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer group card-bounce">
+                        <div class="p-6 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="w-12 h-12 rounded-2xl bg-blue-100 text-bilfen-blue flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-diagram-project"></i>
+                                </span>
+                                <span id="badge-m1" class="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                                    <i class="fa-regular fa-circle"></i> Tamamlanmadı
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider block mb-1">1. Bölüm (2 Aşama)</span>
+                                <h4 class="font-fredoka font-bold text-lg text-slate-800 group-hover:text-bilfen-blue transition-colors">
+                                    İletişim Süreci ve Bileşenleri
+                                </h4>
+                                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                    Gönderici, İleti, Kanal, Alıcı, Dönüt ve Gürültü (Engeller) ögelerini farklı senaryolarda doğru yerlere sürükleyip bırak.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-between">
+                            <span class="text-xs font-bold text-amber-600 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-amber-400"></i> 100 XP
+                            </span>
+                            <span id="btn-text-m1" class="text-xs font-bold text-bilfen-blue group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                                Görevi Başlat <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div id="card-m2" onclick="openModule('module2')" class="bg-white rounded-2xl shadow-md border-2 border-slate-200 hover:border-emerald-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer group card-bounce">
+                        <div class="p-6 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-clock"></i>
+                                </span>
+                                <span id="badge-m2" class="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                                    <i class="fa-regular fa-circle"></i> Tamamlanmadı
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block mb-1">2. Bölüm</span>
+                                <h4 class="font-fredoka font-bold text-lg text-slate-800 group-hover:text-emerald-600 transition-colors">
+                                    Senkron vs. Asenkron İletişim
+                                </h4>
+                                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                    İletişim araçlarını eş zamanlı (anlık) ve farklı zamanlı kullanımlarına göre gruplandır.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-between">
+                            <span class="text-xs font-bold text-amber-600 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-amber-400"></i> 150 XP
+                            </span>
+                            <span id="btn-text-m2" class="text-xs font-bold text-emerald-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                                Görevi Başlat <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div id="card-m3" onclick="openModule('module3')" class="bg-white rounded-2xl shadow-md border-2 border-slate-200 hover:border-bilfen-red hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer group card-bounce">
+                        <div class="p-6 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="w-12 h-12 rounded-2xl bg-red-100 text-bilfen-red flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-envelope-open-text"></i>
+                                </span>
+                                <span id="badge-m3" class="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                                    <i class="fa-regular fa-circle"></i> Tamamlanmadı
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-bilfen-red uppercase tracking-wider block mb-1">3. Bölüm</span>
+                                <h4 class="font-fredoka font-bold text-lg text-slate-800 group-hover:text-bilfen-red transition-colors">
+                                    İnteraktif E-Posta Laboratuvarı
+                                </h4>
+                                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                    Alıcı adresi, Konu, CC/BCC, Nezaketli üslup ve dosya eki seçeneklerini açılır menülerden doğru seçerek e-posta gönder.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-between">
+                            <span class="text-xs font-bold text-amber-600 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-amber-400"></i> 200 XP
+                            </span>
+                            <span id="btn-text-m3" class="text-xs font-bold text-bilfen-red group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                                Görevi Başlat <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div id="card-m4" onclick="openModule('module4')" class="bg-white rounded-2xl shadow-md border-2 border-slate-200 hover:border-purple-600 hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer group card-bounce">
+                        <div class="p-6 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-sliders"></i>
+                                </span>
+                                <span id="badge-m4" class="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                                    <i class="fa-regular fa-circle"></i> Tamamlanmadı
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-purple-600 uppercase tracking-wider block mb-1">4. Bölüm (Adım Adım)</span>
+                                <h4 class="font-fredoka font-bold text-lg text-slate-800 group-hover:text-purple-600 transition-colors">
+                                    Kullanım Amacına Uygunluk Laboratuvarı
+                                </h4>
+                                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                    Senaryoları sırayla çöz; acil durum, resmi ödev, grup sohbeti ve forum için amaca en uygun iletişim aracını belirle.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-between">
+                            <span class="text-xs font-bold text-amber-600 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-amber-400"></i> 150 XP
+                            </span>
+                            <span id="btn-text-m4" class="text-xs font-bold text-purple-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                                Görevi Başlat <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 1: İLETİŞİM SÜRECİ BİLEŞENLERİ VE GÜRÜLTÜ -->
+        <section id="module1" class="view-content hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <button onclick="showMainMenu()" class="text-xs font-bold text-bilfen-navy hover:text-bilfen-blue flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 transition-all">
+                    <i class="fa-solid fa-arrow-left"></i> Ana Menüye Dön
+                </button>
+                <div class="flex items-center gap-2">
+                    <span id="m1StageIndicator1" class="text-xs font-bold px-3 py-1 rounded-full bg-bilfen-blue text-white shadow-sm">1. Aşama</span>
+                    <span id="m1StageIndicator2" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-200 text-slate-500">2. Aşama</span>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-blue-900 to-slate-900 text-white rounded-2xl p-5 shadow-lg border-l-8 border-bilfen-gold flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-fredoka font-bold">İletişim Süreci ve Bileşenleri Dedektifi</h2>
+                    <p class="text-blue-200 text-xs sm:text-sm mt-1">İletişimin 6 temel ögesini (Gürültü/Engeller dahil) sürükleyip doğru yerlere bırakarak mesajın hedefe ulaşmasını sağla!</p>
+                </div>
+                <div class="bg-white/10 px-4 py-2 rounded-xl text-center backdrop-blur-sm self-stretch md:self-auto flex items-center justify-center">
+                    <span class="text-xs text-blue-200">Görev Ödülü: <b class="text-bilfen-gold text-sm">100 XP</b></span>
+                </div>
+            </div>
+
+            <!-- 6 Element Info Cards Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center">
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <i class="fa-solid fa-user-gear text-blue-600 text-2xl mb-1"></i>
+                    <h3 class="font-bold text-xs text-slate-800">1. Gönderici</h3>
+                    <p class="text-[11px] text-slate-500">Mesajı başlatan kaynak</p>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <i class="fa-solid fa-comment-dots text-purple-600 text-2xl mb-1"></i>
+                    <h3 class="font-bold text-xs text-slate-800">2. İleti (Mesaj)</h3>
+                    <p class="text-[11px] text-slate-500">Aktarılan duygu/düşünce</p>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <i class="fa-solid fa-tower-cell text-emerald-600 text-2xl mb-1"></i>
+                    <h3 class="font-bold text-xs text-slate-800">3. Kanal</h3>
+                    <p class="text-[11px] text-slate-500">İletişim ortamı (İnternet vb.)</p>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <i class="fa-solid fa-user-check text-amber-600 text-2xl mb-1"></i>
+                    <h3 class="font-bold text-xs text-slate-800">4. Alıcı</h3>
+                    <p class="text-[11px] text-slate-500">Mesajı kabul eden kişi</p>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <i class="fa-solid fa-reply text-rose-600 text-2xl mb-1"></i>
+                    <h3 class="font-bold text-xs text-slate-800">5. Dönüt</h3>
+                    <p class="text-[11px] text-slate-500">Alıcının verdiği tepki</p>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-orange-300 bg-orange-50/50 shadow-sm">
+                    <i class="fa-solid fa-triangle-exclamation text-orange-600 text-2xl mb-1"></i>
+                    <h3 class="font-bold text-xs text-slate-800">6. Gürültü</h3>
+                    <p class="text-[11px] text-slate-500">İletişimi bozan/engellemektedir</p>
+                </div>
+            </div>
+
+            <!-- Drag & Drop Container -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 id="m1ScenarioTitle" class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-puzzle-piece text-bilfen-red"></i> Senaryo Bulmacası (1. Aşama)
+                    </h3>
+                    <span id="m1BadgeStep" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-lg border border-blue-200">
+                        1. Aşama / 2
+                    </span>
+                </div>
+                <p id="m1ScenarioText" class="text-sm text-slate-700 mb-6 bg-slate-50 p-3.5 rounded-xl border border-slate-200 leading-relaxed font-medium"></p>
+
+                <!-- Drag Options -->
+                <div class="mb-6">
+                    <p class="text-xs font-bold uppercase text-slate-400 mb-2 flex items-center gap-1">
+                        <i class="fa-solid fa-hand-pointer text-bilfen-blue"></i> Aşağıdaki karışık ögeleri aşağıdaki uygun kutulara sürükleyip bırakın:
+                    </p>
+                    <div id="m1-options" ondragover="allowDropM1(event)" ondragleave="leaveDropM1(event)" ondrop="dropToBankM1(event)" class="flex flex-wrap gap-3 p-3.5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl transition-colors min-h-[70px] items-center"></div>
+                </div>
+
+                <!-- Drop Target Zones (6 Slots) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div ondragover="allowDropM1(event)" ondragleave="leaveDropM1(event)" ondrop="dropM1(event)" class="m1-target bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-3 text-center min-h-[110px] flex flex-col justify-center items-center transition-colors" data-required="Gönderici">
+                        <span class="text-xs font-bold text-blue-600 uppercase mb-1">1. GÖNDERİCİ</span>
+                        <div class="slot-content font-semibold text-xs text-slate-400 py-2 w-full flex justify-center items-center">Buraya Sürükle</div>
+                    </div>
+                    <div ondragover="allowDropM1(event)" ondragleave="leaveDropM1(event)" ondrop="dropM1(event)" class="m1-target bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-3 text-center min-h-[110px] flex flex-col justify-center items-center transition-colors" data-required="İleti">
+                        <span class="text-xs font-bold text-purple-600 uppercase mb-1">2. İLETİ (MESAJ)</span>
+                        <div class="slot-content font-semibold text-xs text-slate-400 py-2 w-full flex justify-center items-center">Buraya Sürükle</div>
+                    </div>
+                    <div ondragover="allowDropM1(event)" ondragleave="leaveDropM1(event)" ondrop="dropM1(event)" class="m1-target bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-3 text-center min-h-[110px] flex flex-col justify-center items-center transition-colors" data-required="Kanal">
+                        <span class="text-xs font-bold text-emerald-600 uppercase mb-1">3. KANAL (ORTAM)</span>
+                        <div class="slot-content font-semibold text-xs text-slate-400 py-2 w-full flex justify-center items-center">Buraya Sürükle</div>
+                    </div>
+                    <div ondragover="allowDropM1(event)" ondragleave="leaveDropM1(event)" ondrop="dropM1(event)" class="m1-target bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-3 text-center min-h-[110px] flex flex-col justify-center items-center transition-colors" data-required="Alıcı">
+                        <span class="text-xs font-bold text-amber-600 uppercase mb-1">4. ALICI</span>
+                        <div class="slot-content font-semibold text-xs text-slate-400 py-2 w-full flex justify-center items-center">Buraya Sürükle</div>
+                    </div>
+                    <div ondragover="allowDropM1(event)" ondragleave="leaveDropM1(event)" ondrop="dropM1(event)" class="m1-target bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-3 text-center min-h-[110px] flex flex-col justify-center items-center transition-colors" data-required="Dönüt">
+                        <span class="text-xs font-bold text-rose-600 uppercase mb-1">5. DÖNÜT (YANIT)</span>
+                        <div class="slot-content font-semibold text-xs text-slate-400 py-2 w-full flex justify-center items-center">Buraya Sürükle</div>
+                    </div>
+                    <div ondragover="allowDropM1(event)" ondragleave="leaveDropM1(event)" ondrop="dropM1(event)" class="m1-target bg-orange-50/50 border-2 border-dashed border-orange-300 rounded-xl p-3 text-center min-h-[110px] flex flex-col justify-center items-center transition-colors" data-required="Gürültü">
+                        <span class="text-xs font-bold text-orange-600 uppercase mb-1">6. GÜRÜLTÜ (ENGEL)</span>
+                        <div class="slot-content font-semibold text-xs text-slate-400 py-2 w-full flex justify-center items-center">Buraya Sürükle</div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-between">
+                    <button onclick="resetCurrentM1Stage()" class="text-xs font-bold text-slate-500 hover:text-slate-800 underline flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> Aşamayı Sıfırla
+                    </button>
+                    <button onclick="checkModule1()" class="bg-bilfen-navy hover:bg-slate-800 text-white font-fredoka font-bold px-6 py-3 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-bilfen-gold"></i> Cevapları Kontrol Et
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 2: SENKRON VE ASENKRON İLETİŞİM ARAÇLARI -->
+        <section id="module2" class="view-content hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <button onclick="showMainMenu()" class="text-xs font-bold text-bilfen-navy hover:text-bilfen-blue flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 transition-all">
+                    <i class="fa-solid fa-arrow-left"></i> Ana Menüye Dön
+                </button>
+                <span class="text-xs font-semibold text-slate-400">2. Bölüm / 4</span>
+            </div>
+
+            <div class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white rounded-2xl p-5 shadow-lg border-l-8 border-emerald-400 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-fredoka font-bold">Eş Zamanlı (Senkron) vs. Farklı Zamanlı (Asenkron) İletişim</h2>
+                    <p class="text-emerald-100 text-xs sm:text-sm mt-1">İletişim araçlarını zamana bağlı kullanım türüne göre eşleştir ve gruplandır!</p>
+                </div>
+                <div class="bg-white/10 px-4 py-2 rounded-xl text-center backdrop-blur-sm self-stretch md:self-auto flex items-center justify-center">
+                    <span class="text-xs text-emerald-100">Görev Ödülü: <b class="text-emerald-300 text-sm">150 XP</b></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 flex gap-4 items-center">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-2xl flex-shrink-0">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-emerald-900 text-sm">Eş Zamanlı (Senkron) İletişim</h3>
+                        <p class="text-xs text-emerald-700 mt-1">İletişimi kuran kişilerin <b>aynı anda / anlık</b> iletişimde olduğu türdür. (Örn: Canlı Görüşme, Telefon Araması, Anlık Mesajlaşma)</p>
+                    </div>
+                </div>
+                <div class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 flex gap-4 items-center">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-2xl flex-shrink-0">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-indigo-900 text-sm">Farklı Zamanlı (Asenkron) İletişim</h3>
+                        <p class="text-xs text-indigo-700 mt-1">Gönderici ile alıcının <b>farklı zamanlarda</b> mesajlaştığı türdür. (Örn: E-Posta, Forum Paylaşımı, Video Kaydı, Mektup)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
+                <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-filter text-emerald-600"></i> Araç Sınıflandırma Alanı
+                </h3>
+
+                <div id="m2-cards-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div id="bucket-senkron" class="bg-emerald-50/70 border-2 border-dashed border-emerald-400 rounded-2xl p-4 min-h-[180px]">
+                        <h4 class="font-bold text-emerald-800 text-sm flex items-center gap-2 mb-3">
+                            <i class="fa-solid fa-circle text-xs text-emerald-500"></i> Eş Zamanlı (Senkron) Araçlar
+                        </h4>
+                        <div class="bucket-items flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div id="bucket-asenkron" class="bg-indigo-50/70 border-2 border-dashed border-indigo-400 rounded-2xl p-4 min-h-[180px]">
+                        <h4 class="font-bold text-indigo-800 text-sm flex items-center gap-2 mb-3">
+                            <i class="fa-solid fa-circle text-xs text-indigo-500"></i> Farklı Zamanlı (Asenkron) Araçlar
+                        </h4>
+                        <div class="bucket-items flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-between items-center">
+                    <button onclick="resetModule2()" class="text-xs text-slate-500 hover:text-slate-800 underline">Tümünü Sıfırla</button>
+                    <button onclick="checkModule2()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-fredoka font-bold px-6 py-3 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-check-double"></i> Gruplandırmayı Onayla
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 3: E-POSTA SİMÜLATÖRÜ VE İLETİŞİM KURALLARI -->
+        <section id="module3" class="view-content hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <button onclick="showMainMenu()" class="text-xs font-bold text-bilfen-navy hover:text-bilfen-blue flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 transition-all">
+                    <i class="fa-solid fa-arrow-left"></i> Ana Menüye Dön
+                </button>
+                <span class="text-xs font-semibold text-slate-400">3. Bölüm / 4</span>
+            </div>
+
+            <div class="bg-gradient-to-r from-red-900 to-slate-900 text-white rounded-2xl p-5 shadow-lg border-l-8 border-bilfen-red flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-fredoka font-bold">İnteraktif E-Posta Laboratuvarı</h2>
+                    <p class="text-red-100 text-xs sm:text-sm mt-1">Öğretmenine ödev teslimi için açılır menülerden doğru seçenekleri belirleyerek uygun bir e-posta hazırla ve gönder!</p>
+                </div>
+                <div class="bg-white/10 px-4 py-2 rounded-xl text-center backdrop-blur-sm self-stretch md:self-auto flex items-center justify-center">
+                    <span class="text-xs text-red-100">Görev Ödülü: <b class="text-bilfen-gold text-sm">200 XP</b></span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-300 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+                <div class="lg:col-span-4 bg-slate-900 text-slate-200 p-5 space-y-4">
+                    <h3 class="font-fredoka text-lg font-bold text-bilfen-gold flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb text-amber-400"></i> Doğru E-Posta Kuralları
+                    </h3>
+                    <ul class="text-xs space-y-3">
+                        <li class="flex items-start gap-2 bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                            <i class="fa-solid fa-at text-blue-400 mt-0.5"></i>
+                            <div>
+                                <b class="text-white block">1. Alıcı Adresi (Kime):</b>
+                                Kurumsal ve geçerli bir e-posta adresi seçilmelidir. (Örn: <code>ogretmen@bilfen.k12.tr</code>)
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2 bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                            <i class="fa-solid fa-heading text-emerald-400 mt-0.5"></i>
+                            <div>
+                                <b class="text-white block">2. Konu (Subject):</b>
+                                E-postanın içeriğini net özetleyen bir başlık seçilmelidir.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2 bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                            <i class="fa-solid fa-copy text-purple-400 mt-0.5"></i>
+                            <div>
+                                <b class="text-white block">3. CC (Bilgi):</b>
+                                Bilgisi olması gereken 2. kişiyi eklemek için kullanılır.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2 bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                            <i class="fa-solid fa-heart text-rose-400 mt-0.5"></i>
+                            <div>
+                                <b class="text-white block">4. Hitap ve Nezaket:</b>
+                                Hitap ile başlayan, durum açıklayan ve saygılı kapanış içeren bir metin seçilmelidir.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="lg:col-span-8 p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="border-b border-slate-200 pb-3 mb-4 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-pen-to-square text-bilfen-red"></i> E-Posta Oluşturma Formu
+                            </h3>
+                            <span class="text-xs text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">Seçim Modu</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <label for="selectTo" class="sm:w-28 text-xs font-bold text-slate-600 flex items-center gap-1">
+                                    <i class="fa-solid fa-user text-blue-500"></i> Kime:
+                                </label>
+                                <select id="selectTo" class="flex-grow p-2.5 text-xs sm:text-sm border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-bilfen-blue focus:border-bilfen-blue focus:outline-none bg-slate-50 font-medium text-slate-800">
+                                    <option value="">-- Alıcı Adresini Seçiniz --</option>
+                                    <option value="invalid1">ogretmen.bilfen (Hatalı Format)</option>
+                                    <option value="correct">ogretmen@bilfen.k12.tr (Doğru Kurumsal Adres)</option>
+                                    <option value="invalid2">kral_oyuncu_2013@gmail.com (Kişisel Adres)</option>
+                                </select>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <label for="selectCc" class="sm:w-28 text-xs font-bold text-slate-600 flex items-center gap-1">
+                                    <i class="fa-solid fa-users text-purple-500"></i> CC (Bilgi):
+                                </label>
+                                <select id="selectCc" class="flex-grow p-2.5 text-xs sm:text-sm border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-bilfen-blue focus:border-bilfen-blue focus:outline-none bg-slate-50 font-medium text-slate-800">
+                                    <option value="none">Seçim Yok (İsteğe Bağlı)</option>
+                                    <option value="valid">zumrebaskani@bilfen.k12.tr (Bilişim Teknolojileri Zümre Başkanı)</option>
+                                </select>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <label for="selectSubject" class="sm:w-28 text-xs font-bold text-slate-600 flex items-center gap-1">
+                                    <i class="fa-solid fa-heading text-emerald-500"></i> Konu:
+                                </label>
+                                <select id="selectSubject" class="flex-grow p-2.5 text-xs sm:text-sm border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-bilfen-blue focus:border-bilfen-blue focus:outline-none bg-slate-50 font-medium text-slate-800">
+                                    <option value="">-- E-Posta Konusunu Seçiniz --</option>
+                                    <option value="empty">[Konu Başlığı Boş Bırakılsın]</option>
+                                    <option value="invalid">ödevvvvv</option>
+                                    <option value="correct">6-A Bilişim Teknolojileri Proje Görevi - Ali Yılmaz</option>
+                                </select>
+                            </div>
+
+                            <div class="flex flex-col gap-1.5">
+                                <label for="selectBody" class="text-xs font-bold text-slate-600 flex items-center gap-1">
+                                    <i class="fa-solid fa-align-left text-amber-500"></i> E-Posta Mesaj Metni:
+                                </label>
+                                <select id="selectBody" class="w-full p-2.5 text-xs sm:text-sm border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-bilfen-blue focus:border-bilfen-blue focus:outline-none bg-slate-50 font-medium text-slate-800">
+                                    <option value="">-- Mesaj İçeriğini Seçiniz --</option>
+                                    <option value="invalid_informal">"slm hocamm odevı attm kontrol edermsnz tskler :))"</option>
+                                    <option value="invalid_short">"Ödevim ektedir."</option>
+                                    <option value="correct">"Sayın Öğretmenim, Ekte hazırlamış olduğum Bilişim Teknolojileri dersi proje ödevimi sunuyorum. İyi çalışmalar dilerim. Saygılarımla, Ali Yılmaz 6/A 452"</option>
+                                </select>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
+                                <label for="selectAttachment" class="sm:w-28 text-xs font-bold text-slate-600 flex items-center gap-1">
+                                    <i class="fa-solid fa-paperclip text-rose-500"></i> Dosya Eki:
+                                </label>
+                                <select id="selectAttachment" class="flex-grow p-2.5 text-xs sm:text-sm border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-bilfen-blue focus:border-bilfen-blue focus:outline-none bg-slate-50 font-medium text-slate-800">
+                                    <option value="none">-- Dosya Ekleme Seçeneği --</option>
+                                    <option value="correct">Bilisim_Proje_Odevi.pdf (1.2 MB - Doğru Ödev Dosyası)</option>
+                                    <option value="invalid_game">Oyun_Kurulum.exe (850 MB - Hatalı ve Güvensiz Dosya)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 border-t border-slate-200 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <span id="emailFeedback" class="text-xs font-semibold"></span>
+                        <button onclick="sendEmailSimulation()" class="w-full sm:w-auto bg-bilfen-red hover:bg-red-700 text-white font-fredoka font-bold px-6 py-2.5 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> E-Postayı Gönder
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 4: İLETİŞİM ARAÇLARININ KULLANIM AMACINA UYGUNLUĞU -->
+        <section id="module4" class="view-content hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <button onclick="showMainMenu()" class="text-xs font-bold text-bilfen-navy hover:text-bilfen-blue flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 transition-all">
+                    <i class="fa-solid fa-arrow-left"></i> Ana Menüye Dön
+                </button>
+                <span class="text-xs font-semibold text-slate-400">4. Bölüm / 4</span>
+            </div>
+
+            <div class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white rounded-2xl p-5 shadow-lg border-l-8 border-purple-500 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-fredoka font-bold">Kullanım Amacına Uygunluk Laboratuvarı</h2>
+                    <p class="text-purple-200 text-xs sm:text-sm mt-1"><b>Kazanım:</b> İletişim araçlarını durum, aciliyet ve ortama göre kullanım amaçlarına uygunluğu açısından değerlendirir.</p>
+                </div>
+                <div class="bg-white/10 px-4 py-2 rounded-xl text-center backdrop-blur-sm self-stretch md:self-auto flex items-center justify-center">
+                    <span class="text-xs text-purple-200">Görev Ödülü: <b class="text-bilfen-gold text-sm">150 XP</b></span>
+                </div>
+            </div>
+
+            <!-- Step Navigation Progress Bar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Senaryo Adımları:</span>
+                    <div id="m4StepDots" class="flex items-center gap-2"></div>
+                </div>
+                <div class="text-xs font-bold text-purple-700 bg-purple-50 px-3.5 py-1.5 rounded-xl border border-purple-200">
+                    <i class="fa-solid fa-list-check text-purple-600"></i> Adım Adım Senaryo Analizi
+                </div>
+            </div>
+
+            <!-- Single Step Scenario Interactive Card -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-200 space-y-6" id="m4ScenarioBox"></div>
+        </section>
+
+        <!-- CONGRATULATIONS & PERFORMANCE DASHBOARD SECTION -->
+        <section id="congrats-view" class="view-content hidden space-y-8">
+            <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-slate-950 rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-amber-200 text-center relative overflow-hidden">
+                <div class="absolute -left-10 -bottom-10 opacity-15 text-slate-900 text-9xl font-bold pointer-events-none">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div class="absolute -right-10 -top-10 opacity-15 text-slate-900 text-9xl font-bold pointer-events-none">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+
+                <div class="relative z-10 space-y-4 max-w-3xl mx-auto">
+                    <div class="inline-flex items-center gap-2 bg-slate-900 text-bilfen-gold px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-widest shadow-lg">
+                        <i class="fa-solid fa-crown text-amber-400 text-sm"></i> Görev Tamamlandı! • 600 / 600 XP
+                    </div>
+
+                    <h2 class="text-3xl sm:text-5xl font-fredoka font-extrabold text-slate-900 tracking-tight">
+                        Tebrikler, <span id="congratsStudentName">Geleceğin Yazılımcısı</span>! 🎉
+                    </h2>
+
+                    <p class="text-slate-900 font-semibold text-sm sm:text-base leading-relaxed">
+                        6. Sınıf Bilişim Teknolojileri ve Yazılım dersi <b>"İletişim Dünyası"</b> ünitesine ait tüm modülleri ve simülasyonları başarıyla tamamlayarak <b>İletişim Ustası</b> unvanına hak kazandın!
+                    </p>
+
+                    <div class="pt-2 flex flex-wrap justify-center gap-3">
+                        <button onclick="triggerVictoryCelebration()" class="bg-slate-900 hover:bg-slate-800 text-bilfen-gold font-fredoka font-bold px-6 py-2.5 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 text-xs sm:text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Kutlamayı Tekrar Başlat 🎆
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-3xl font-bold flex-shrink-0">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Kazanılan Puan</span>
+                        <span class="font-fredoka text-2xl font-bold text-slate-800">600 / 600 XP</span>
+                        <span class="text-[11px] font-semibold text-emerald-600 block mt-0.5"> Tam Başarı (%100)</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-3xl font-bold flex-shrink-0">
+                        <i class="fa-solid fa-stopwatch"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Toplam Süre</span>
+                        <span id="statTotalTime" class="font-fredoka text-2xl font-bold text-slate-800">00:00</span>
+                        <span class="text-[11px] text-slate-500 block mt-0.5">Tüm bölümlerin toplamı</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-3xl font-bold flex-shrink-0">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Toplam Hata</span>
+                        <span id="statTotalErrors" class="font-fredoka text-2xl font-bold text-slate-800">0</span>
+                        <span id="statErrorSubtext" class="text-[11px] font-semibold text-emerald-600 block mt-0.5">Sıfır Hata!</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl font-bold flex-shrink-0">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Verimlilik Skoru</span>
+                        <span id="statOverallAccuracy" class="font-fredoka text-2xl font-bold text-emerald-600">%100</span>
+                        <span class="text-[11px] text-slate-500 block mt-0.5">Süre ve isabet analizi</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+                <div class="bg-slate-900 text-white p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-fredoka text-xl font-bold text-bilfen-gold flex items-center gap-2">
+                            <i class="fa-solid fa-square-poll-vertical text-amber-400"></i> Modül Başarı Dökümü ve Performans Karnesi
+                        </h3>
+                        <p class="text-slate-300 text-xs mt-1">Aşağıda her bir öğrenme modülünde harcadığın süre ve yapılan hataların dökümü yer almaktadır.</p>
+                    </div>
+                    <span class="bg-slate-800 text-xs font-bold px-3 py-1.5 rounded-xl border border-slate-700 text-slate-300 self-start sm:self-auto">
+                        <i class="fa-solid fa-graduation-cap text-bilfen-blue"></i> Bilfen BT Zümresi
+                    </span>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="moduleBreakdownGrid"></div>
+                </div>
+
+                <div class="bg-slate-50 border-t border-slate-200 p-6 space-y-4">
+                    <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i> Kazanılan Ders Yetkinlikleri Özeti
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 flex items-start gap-2.5">
+                            <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                            <div>
+                                <b class="text-slate-800 block">İletişim Ögeleri ve Gürültü</b>
+                                Gönderici, İleti, Kanal, Alıcı, Dönüt ve Gürültü ögelerini doğru çözümler.
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 flex items-start gap-2.5">
+                            <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                            <div>
+                                <b class="text-slate-800 block">Eş Zamanlılık (Senkron)</b>
+                                Anlık ve farklı zamanlı iletişim araçlarını ayırt eder.
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 flex items-start gap-2.5">
+                            <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                            <div>
+                                <b class="text-slate-800 block">E-Posta Etik Kuralları</b>
+                                Kurumsal adres, konu, hitap, CC ve ek dosya kurallarına uyar.
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 flex items-start gap-2.5">
+                            <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                            <div>
+                                <b class="text-slate-800 block">Amaca Uygun Araç</b>
+                                Acil durum, resmi görev ve sohbet durumlarında doğru araç seçer.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <button onclick="promptResetApp()" class="w-full sm:w-auto text-xs font-bold text-slate-600 hover:text-bilfen-red underline flex items-center justify-center gap-2 transition-colors">
+                        <i class="fa-solid fa-rotate"></i> Tüm Verileri Sıfırla ve Yeniden Oyna
+                    </button>
+                    <button onclick="showMainMenu()" class="w-full sm:w-auto bg-bilfen-navy hover:bg-slate-800 text-white font-fredoka font-bold px-8 py-3 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-house text-bilfen-gold"></i> Ana Menüye Dön
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- CUSTOM MODAL DIALOG -->
+    <div id="customModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border-2 border-bilfen-gold text-center space-y-4 transform transition-all scale-100">
+            <div id="modalIcon" class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 mx-auto flex items-center justify-center text-3xl">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
+            <h3 id="modalTitle" class="font-fredoka text-xl font-bold text-slate-800">Bilgi</h3>
+            <p id="modalMessage" class="text-sm text-slate-600 leading-relaxed"></p>
+            <div id="modalActionContainer" class="pt-2">
+                <button onclick="closeModal()" class="w-full bg-bilfen-navy hover:bg-slate-800 text-white font-fredoka font-bold py-2.5 rounded-xl shadow-md transition-all">
+                    Tamam, Anladım
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-bilfen-navy text-slate-400 text-xs py-6 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-semibold text-slate-300">Bilfen Eğitim Kurumları - Bilişim Teknolojileri ve Yazılım Dersi</p>
+        </div>
+    </footer>
+
+    <script>
+        // GLOBAL APP STATE WITH DURATION AND ERROR METRICS
+        const appState = {
+            xp: 0,
+            completedModules: {
+                m1: false,
+                m2: false,
+                m3: false,
+                m4: false
+            },
+            stats: {
+                m1: { startTime: null, duration: 0, errors: 0 },
+                m2: { startTime: null, duration: 0, errors: 0 },
+                m3: { startTime: null, duration: 0, errors: 0 },
+                m4: { startTime: null, duration: 0, errors: 0 }
+            },
+            m1CurrentStage: 1,
+            m1Stage1Cleared: false,
+            m1Stage2Cleared: false,
+            m4CurrentStep: 1,
+            m4SelectedOption: null,
+            m4StepConfirmed: [false, false, false, false, false],
+            m4StepAnswers: [null, null, null, null, null]
+        };
+
+        // MODULE 1 SCENARIOS DATA (WITH GÜRÜLTÜ INCLUDED)
+        const m1Scenarios = [
+            {
+                stage: 1,
+                title: "1. Aşama: Okul Portalı Duyurusu",
+                badgeText: "1. Aşama / 2",
+                text: "<strong>Senaryo 1:</strong> <i>\"Öğretmen Zeynep Hanım, okul portalından öğrencilerine 'Yarın kodlama sergimiz var!' bildirimini gönderdi. İletişim anında yaşanan <b>zayıf internet bağlantısı</b> mesajın iletimini zorlaştırsa da Ali bildirimi okuyup 'Harika, projem hazır!' yanıtını yazdı.\"</i>",
+                tokens: [
+                    { id: "m1-item-5", type: "Dönüt", label: '"Harika, projem hazır!"', icon: "fa-thumbs-up", bg: "bg-rose-100 hover:bg-rose-200 text-rose-800 border-rose-300" },
+                    { id: "m1-item-1", type: "Gönderici", label: "Zeynep Öğretmen", icon: "fa-paper-plane", bg: "bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300" },
+                    { id: "m1-item-6", type: "Gürültü", label: "Zayıf İnternet Bağlantısı", icon: "fa-triangle-exclamation", bg: "bg-orange-100 hover:bg-orange-200 text-orange-800 border-orange-300" },
+                    { id: "m1-item-3", type: "Kanal", label: "Okul İnternet Portalı", icon: "fa-wifi", bg: "bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border-emerald-300" },
+                    { id: "m1-item-2", type: "İleti", label: '"Yarın kodlama sergimiz var!"', icon: "fa-envelope", bg: "bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-300" },
+                    { id: "m1-item-4", type: "Alıcı", label: "Ali", icon: "fa-graduation-cap", bg: "bg-amber-100 hover:bg-amber-200 text-amber-800 border-amber-300" }
+                ]
+            },
+            {
+                stage: 2,
+                title: "2. Aşama: Kütüphane Bilgi Sorgulama",
+                badgeText: "2. Aşama / 2",
+                text: "<strong>Senaryo 2:</strong> <i>\"Öğrenci Ahmet, e-posta sistemi üzerinden okul kütüphanecisi Ayşe Hanım'a 'Bilim Çocuk dergisinin son sayısı kütüphanede var mı?' mesajını gönderdi. E-posta sunucusundaki <b>teknik aksaklık</b> nedeniyle iletim biraz gecikse de Ayşe Hanım mesajı okuyup 'Evet, 3. rafta bulabilirsiniz' cevabını verdi.\"</i>",
+                tokens: [
+                    { id: "m1-s2-item-4", type: "Alıcı", label: "Kütüphaneci Ayşe Hanım", icon: "fa-user-tie", bg: "bg-amber-100 hover:bg-amber-200 text-amber-800 border-amber-300" },
+                    { id: "m1-s2-item-6", type: "Gürültü", label: "Sunucudaki Teknik Aksaklık", icon: "fa-bug", bg: "bg-orange-100 hover:bg-orange-200 text-orange-800 border-orange-300" },
+                    { id: "m1-s2-item-2", type: "İleti", label: '"Bilim Çocuk dergisinin son sayısı kütüphanede var mı?"', icon: "fa-book-open", bg: "bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-300" },
+                    { id: "m1-s2-item-5", type: "Dönüt", label: '"Evet, 3. rafta bulabilirsiniz"', icon: "fa-reply", bg: "bg-rose-100 hover:bg-rose-200 text-rose-800 border-rose-300" },
+                    { id: "m1-s2-item-1", type: "Gönderici", label: "Ahmet", icon: "fa-user-graduate", bg: "bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300" },
+                    { id: "m1-s2-item-3", type: "Kanal", label: "E-Posta Sistemi", icon: "fa-at", bg: "bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border-emerald-300" }
+                ]
+            }
+        ];
+
+        // MODULE 4 SCENARIOS DATA (STEP-BY-STEP)
+        const m4ScenariosData = [
+            {
+                step: 1,
+                tag: "Senaryo 1: Acil Durum",
+                tagBg: "bg-red-100 text-red-700 border-red-200",
+                icon: "fa-triangle-exclamation text-red-600",
+                title: "Okul bahçesinde bileği burkulan arkadaşın için acil yardım çağıracaksın.",
+                desc: "Anlık müdahale gerektiren bu durumda hangi iletişim aracı kullanımı açısından en uygundur?",
+                correctKey: "B",
+                options: [
+                    { key: "A", text: "Sosyal medyada durum paylaşımı yapmak" },
+                    { key: "B", text: "Nöbetçi öğretmene veya acil servise telefonla ulaşmak" },
+                    { key: "C", text: "Okul kütüphanesine e-posta göndermek" }
+                ]
+            },
+            {
+                step: 2,
+                tag: "Senaryo 2: Resmi Ödev Teslimi",
+                tagBg: "bg-blue-100 text-blue-700 border-blue-200",
+                icon: "fa-file-contract text-blue-600",
+                title: "Bilişim Teknolojileri dersi dönem ödevinin PDF dosyasını öğretmenine sunacaksın.",
+                desc: "Resmi kaydın tutulması ve dosya ekinin eksiksiz iletilmesi için hangi araç uygundur?",
+                correctKey: "A",
+                options: [
+                    { key: "A", text: "Kurumsal e-posta adresi üzerinden dosya ekiyle göndermek" },
+                    { key: "B", text: "Eğlence oyun odasındaki sohbet kanalına yazmak" },
+                    { key: "C", text: "Öğretmeni telefonla arayıp ödevi sesli okumak" }
+                ]
+            },
+            {
+                step: 3,
+                tag: "Senaryo 3: Grup Etkinliği Organizasyonu",
+                tagBg: "bg-amber-100 text-amber-700 border-amber-200",
+                icon: "fa-users text-amber-600",
+                title: "10 sınıf arkadaşınla hafta sonu buluşma saatini hızlıca kararlaştıracaksınız.",
+                desc: "Birden fazla kişinin anlık fikir belirtebileceği ve ortak karar alabileceği en pratik araç hangisidir?",
+                correctKey: "B",
+                options: [
+                    { key: "A", text: "Her arkadaşa ayrı ayrı posta mektubu göndermek" },
+                    { key: "B", text: "Anlık mesajlaşma grubu (WhatsApp / BiP vb.) kurmak" },
+                    { key: "C", text: "Okul panosuna yazılı dilekçe asmak" }
+                ]
+            },
+            {
+                step: 4,
+                tag: "Senaryo 4: Sürekli Ortak Tartışma",
+                tagBg: "bg-emerald-100 text-emerald-700 border-emerald-200",
+                icon: "fa-comments text-emerald-600",
+                title: "Tüm sınıfın bir hafta boyunca ders konusuyla ilgili fikir paylaşacağı düzenli bir ortam kurulacak.",
+                desc: "Farklı zamanlarda girilip konuların kategorize şekilde tartışılabileceği en uygun araç hangisidir?",
+                correctKey: "A",
+                options: [
+                    { key: "A", text: "Çevrim içi forum / tartışma panosu kullanmak" },
+                    { key: "B", text: "Tek bir kişiye cep telefonundan SMS atmak" },
+                    { key: "C", text: "Televizyonda canlı yayın başlatmak" }
+                ]
+            }
+        ];
+
+        // DOM LOADED INITIALIZATION
+        window.onload = function() {
+            initModule1Stage(1);
+            initModule2Cards();
+            renderM4Scenario(1);
+            showMainMenu();
+        };
+
+        // VIEW NAVIGATION ROUTER
+        function showMainMenu() {
+            document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('main-menu').classList.remove('hidden');
+
+            document.getElementById('breadcrumbText').innerHTML = '<i class="fa-solid fa-compass text-bilfen-blue"></i> Ana Menü';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openModule(moduleId) {
+            const moduleKeyMap = {
+                'module1': 'm1',
+                'module2': 'm2',
+                'module3': 'm3',
+                'module4': 'm4'
+            };
+            const key = moduleKeyMap[moduleId];
+            if (key && appState.completedModules[key]) {
+                showModal(
+                    "Bölüm Kilitli!",
+                    "Tebrikler! Bu bölümü daha önce başarıyla tamamladınız. Tamamlanan bölümler kilitlenmektedir.",
+                    "fa-solid fa-lock",
+                    "bg-slate-200 text-slate-700"
+                );
+                return;
+            }
+
+            if (key && !appState.stats[key].startTime) {
+                appState.stats[key].startTime = Date.now();
+            }
+
+            document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(moduleId);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            const names = {
+                'module1': '1. Bölüm: İletişim Ögeleri',
+                'module2': '2. Bölüm: Senkron & Asenkron',
+                'module3': '3. Bölüm: E-Posta Laboratuvarı',
+                'module4': '4. Bölüm: Araç Uygunluğu'
+            };
+
+            document.getElementById('breadcrumbText').innerHTML = `<i class="fa-solid fa-folder-open text-bilfen-gold"></i> Ana Menü / ${names[moduleId] || ''}`;
+            
+            if (moduleId === 'module4') {
+                renderM4Scenario(appState.m4CurrentStep || 1);
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // CONGRATULATIONS PAGE DISPLAY & COMPUTATION
+        function showCongratsPage() {
+            const studentInput = document.getElementById('studentNameInput').value.trim() || "Geleceğin Yazılımcısı";
+            document.getElementById('congratsStudentName').innerText = studentInput;
+
+            updateCongratsDashboard();
+
+            document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('congrats-view').classList.remove('hidden');
+            document.getElementById('breadcrumbText').innerHTML = '<i class="fa-solid fa-trophy text-amber-500"></i> Ana Menü / Tebrikler ve Başarı Analizi';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            triggerVictoryCelebration();
+        }
+
+        function updateCongratsDashboard() {
+            let totalSecs = 0;
+            let totalErrors = 0;
+
+            const moduleMeta = [
+                { key: 'm1', title: '1. Bölüm: İletişim Ögeleri', icon: 'fa-diagram-project', color: 'blue' },
+                { key: 'm2', title: '2. Bölüm: Senkron vs. Asenkron', icon: 'fa-clock', color: 'emerald' },
+                { key: 'm3', title: '3. Bölüm: E-Posta Laboratuvarı', icon: 'fa-envelope-open-text', color: 'red' },
+                { key: 'm4', title: '4. Bölüm: Amaca Uygunluk', icon: 'fa-sliders', color: 'purple' }
+            ];
+
+            const gridContainer = document.getElementById('moduleBreakdownGrid');
+            gridContainer.innerHTML = '';
+
+            moduleMeta.forEach(m => {
+                const stat = appState.stats[m.key];
+                const duration = stat.duration || 0;
+                const errs = stat.errors || 0;
+
+                totalSecs += duration;
+                totalErrors += errs;
+
+                let accuracy = Math.max(50, 100 - (errs * 15));
+                if (errs === 0) accuracy = 100;
+
+                let ratingBadge = "Mükemmel 🌟";
+                let ratingClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
+                if (errs === 1) {
+                    ratingBadge = "Çok İyi 👍";
+                    ratingClass = "bg-blue-100 text-blue-800 border-blue-300";
+                } else if (errs > 1) {
+                    ratingBadge = "Azimli Öğrenci 💪";
+                    ratingClass = "bg-amber-100 text-amber-800 border-amber-300";
+                }
+
+                const cardHtml = `
+                    <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 space-y-3 relative overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                            <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                <i class="fa-solid ${m.icon} text-${m.color}-600"></i> ${m.title}
+                            </h4>
+                            <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${ratingClass}">
+                                ${ratingBadge}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                            <div class="bg-white p-2 rounded-xl border border-slate-200">
+                                <span class="text-slate-400 block text-[10px] font-bold uppercase">Süre</span>
+                                <b class="text-slate-800 font-fredoka text-sm">${formatTime(duration)}</b>
+                            </div>
+                            <div class="bg-white p-2 rounded-xl border border-slate-200">
+                                <span class="text-slate-400 block text-[10px] font-bold uppercase">Hata</span>
+                                <b class="${errs === 0 ? 'text-emerald-600' : 'text-rose-600'} font-fredoka text-sm">${errs} Yanlış</b>
+                            </div>
+                            <div class="bg-white p-2 rounded-xl border border-slate-200">
+                                <span class="text-slate-400 block text-[10px] font-bold uppercase">İsabet</span>
+                                <b class="text-bilfen-blue font-fredoka text-sm">%${accuracy}</b>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                gridContainer.innerHTML += cardHtml;
+            });
+
+            document.getElementById('statTotalTime').innerText = formatTime(totalSecs);
+            document.getElementById('statTotalErrors').innerText = totalErrors;
+
+            const subtextEl = document.getElementById('statErrorSubtext');
+            if (totalErrors === 0) {
+                subtextEl.innerText = "Kusursuz Performans! 👏";
+                subtextEl.className = "text-[11px] font-semibold text-emerald-600 block mt-0.5";
+            } else {
+                subtextEl.innerText = `${totalErrors} düzeltmeyle tamamlandı`;
+                subtextEl.className = "text-[11px] font-semibold text-amber-600 block mt-0.5";
+            }
+
+            const overallAcc = Math.max(60, Math.round(100 - (totalErrors * 5)));
+            document.getElementById('statOverallAccuracy').innerText = `%${overallAcc}`;
+        }
+
+        function formatTime(seconds) {
+            if (seconds <= 0) return "10 sn";
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            if (mins > 0) {
+                return `${mins} dk ${secs} sn`;
+            }
+            return `${secs} sn`;
+        }
+
+        function triggerVictoryCelebration() {
+            const end = Date.now() + (2.5 * 1000);
+            const colors = ['#E31B23', '#FFB800', '#1D70B8', '#10B981', '#8B5CF6'];
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        // CUSTOM MODAL DIALOG
+        function showModal(title, message, iconClass = "fa-solid fa-circle-info", iconBg = "bg-blue-100 text-blue-600", customButtonHtml = null) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerHTML = message;
+            const iconEl = document.getElementById('modalIcon');
+            iconEl.className = `w-16 h-16 rounded-full ${iconBg} mx-auto flex items-center justify-center text-3xl`;
+            iconEl.innerHTML = `<i class="${iconClass}"></i>`;
+
+            const actionContainer = document.getElementById('modalActionContainer');
+            if (customButtonHtml) {
+                actionContainer.innerHTML = customButtonHtml;
+            } else {
+                actionContainer.innerHTML = `
+                    <button onclick="closeModal()" class="w-full bg-bilfen-navy hover:bg-slate-800 text-white font-fredoka font-bold py-2.5 rounded-xl shadow-md transition-all">
+                        Tamam, Anladım
+                    </button>
+                `;
+            }
+
+            document.getElementById('customModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+        }
+
+        // ADD XP AND GAMIFICATION REWARDS
+        function addXp(amount, moduleKey) {
+            if (!appState.completedModules[moduleKey]) {
+                if (appState.stats[moduleKey].startTime) {
+                    const elapsed = Math.round((Date.now() - appState.stats[moduleKey].startTime) / 1000);
+                    appState.stats[moduleKey].duration = Math.max(5, elapsed);
+                }
+
+                appState.xp += amount;
+                appState.completedModules[moduleKey] = true;
+                document.getElementById('xpValue').innerText = appState.xp;
+
+                const pct = Math.round((appState.xp / 600) * 100);
+                document.getElementById('mainProgressBar').style.width = pct + '%';
+                document.getElementById('mainProgressText').innerText = `${appState.xp} / 600 XP (%${pct})`;
+
+                const cardEl = document.getElementById('card-' + moduleKey);
+                if (cardEl) {
+                    cardEl.classList.add('opacity-75', 'bg-slate-100');
+                    cardEl.classList.remove('card-bounce', 'hover:shadow-xl');
+                }
+
+                const badgeEl = document.getElementById('badge-' + moduleKey);
+                if (badgeEl) {
+                    badgeEl.className = "text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1";
+                    badgeEl.innerHTML = '<i class="fa-solid fa-lock text-slate-600"></i> Tamamlandı (Kilitli)';
+                }
+
+                const btnTextEl = document.getElementById('btn-text-' + moduleKey);
+                if (btnTextEl) {
+                    btnTextEl.className = "text-xs font-bold text-slate-500 flex items-center gap-1";
+                    btnTextEl.innerHTML = '<i class="fa-solid fa-lock"></i> Kilitlendi';
+                }
+
+                if (appState.xp >= 600) {
+                    document.getElementById('heroCongratsBanner').classList.remove('hidden');
+                    document.getElementById('navCongratsBtn').classList.remove('hidden');
+                    document.getElementById('navCongratsBtn').classList.add('flex');
+                }
+
+                confetti({
+                    particleCount: 90,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function finishModuleAndReturn(moduleKey) {
+            closeModal();
+            if (appState.xp >= 600) {
+                showCongratsPage();
+            } else {
+                showMainMenu();
+            }
+        }
+
+        function promptResetApp() {
+            showModal(
+                "Tüm Veriler Sıfırlansın mı?",
+                "Tüm XP puanları, modül ilerlemeleri ve süre verileri sıfırlanacaktır. Yeniden başlamak istediğinizden emin misiniz?",
+                "fa-solid fa-rotate-left",
+                "bg-rose-100 text-rose-600",
+                `<div class="flex gap-2">
+                    <button onclick="closeModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl">Vazgeç</button>
+                    <button onclick="confirmResetEntireApp()" class="flex-1 bg-bilfen-red hover:bg-red-700 text-white font-bold py-2.5 rounded-xl">Evet, Sıfırla</button>
+                </div>`
+            );
+        }
+
+        function confirmResetEntireApp() {
+            closeModal();
+            appState.xp = 0;
+            appState.completedModules = { m1: false, m2: false, m3: false, m4: false };
+            appState.stats = {
+                m1: { startTime: null, duration: 0, errors: 0 },
+                m2: { startTime: null, duration: 0, errors: 0 },
+                m3: { startTime: null, duration: 0, errors: 0 },
+                m4: { startTime: null, duration: 0, errors: 0 }
+            };
+            appState.m1CurrentStage = 1;
+            appState.m1Stage1Cleared = false;
+            appState.m1Stage2Cleared = false;
+            appState.m4CurrentStep = 1;
+            appState.m4SelectedOption = null;
+            appState.m4StepConfirmed = [false, false, false, false, false];
+            appState.m4StepAnswers = [null, null, null, null, null];
+
+            document.getElementById('xpValue').innerText = '0';
+            document.getElementById('mainProgressBar').style.width = '0%';
+            document.getElementById('mainProgressText').innerText = '0 / 600 XP (%0)';
+            document.getElementById('heroCongratsBanner').classList.add('hidden');
+            document.getElementById('navCongratsBtn').classList.add('hidden');
+            document.getElementById('navCongratsBtn').classList.remove('flex');
+
+            ['m1', 'm2', 'm3', 'm4'].forEach(mKey => {
+                const cardEl = document.getElementById('card-' + mKey);
+                if (cardEl) {
+                    cardEl.classList.remove('opacity-75', 'bg-slate-100');
+                    cardEl.classList.add('card-bounce');
+                }
+                const badgeEl = document.getElementById('badge-' + mKey);
+                if (badgeEl) {
+                    badgeEl.className = "text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200";
+                    badgeEl.innerHTML = '<i class="fa-regular fa-circle"></i> Tamamlanmadı';
+                }
+                const btnTextEl = document.getElementById('btn-text-' + mKey);
+                if (btnTextEl) {
+                    if (mKey === 'm1') {
+                        btnTextEl.className = "text-xs font-bold text-bilfen-blue group-hover:translate-x-1 transition-transform flex items-center gap-1";
+                        btnTextEl.innerHTML = 'Görevi Başlat <i class="fa-solid fa-arrow-right"></i>';
+                    } else if (mKey === 'm2') {
+                        btnTextEl.className = "text-xs font-bold text-emerald-600 group-hover:translate-x-1 transition-transform flex items-center gap-1";
+                        btnTextEl.innerHTML = 'Görevi Başlat <i class="fa-solid fa-arrow-right"></i>';
+                    } else if (mKey === 'm3') {
+                        btnTextEl.className = "text-xs font-bold text-bilfen-red group-hover:translate-x-1 transition-transform flex items-center gap-1";
+                        btnTextEl.innerHTML = 'Görevi Başlat <i class="fa-solid fa-arrow-right"></i>';
+                    } else if (mKey === 'm4') {
+                        btnTextEl.className = "text-xs font-bold text-purple-600 group-hover:translate-x-1 transition-transform flex items-center gap-1";
+                        btnTextEl.innerHTML = 'Görevi Başlat <i class="fa-solid fa-arrow-right"></i>';
+                    }
+                }
+            });
+
+            initModule1Stage(1);
+            resetModule2();
+            renderM4Scenario(1);
+
+            document.getElementById('selectTo').value = '';
+            document.getElementById('selectCc').value = 'none';
+            document.getElementById('selectSubject').value = '';
+            document.getElementById('selectBody').value = '';
+            document.getElementById('selectAttachment').value = 'none';
+            document.getElementById('emailFeedback').innerText = '';
+
+            showMainMenu();
+        }
+
+        /* -------------------------------------------------------------------
+           MODULE 1 LOGIC: İLETİŞİM BİLEŞENLERİ VE GÜRÜLTÜ DEDEKTİFİ
+        ------------------------------------------------------------------- */
+        function initModule1Stage(stageNumber) {
+            appState.m1CurrentStage = stageNumber;
+            const scenarioData = m1Scenarios[stageNumber - 1];
+
+            const ind1 = document.getElementById('m1StageIndicator1');
+            const ind2 = document.getElementById('m1StageIndicator2');
+            if (stageNumber === 1) {
+                ind1.className = "text-xs font-bold px-3 py-1 rounded-full bg-bilfen-blue text-white shadow-sm";
+                ind2.className = "text-xs font-bold px-3 py-1 rounded-full bg-slate-200 text-slate-500";
+            } else {
+                ind1.className = "text-xs font-bold px-3 py-1 rounded-full bg-emerald-600 text-white shadow-sm";
+                ind2.className = "text-xs font-bold px-3 py-1 rounded-full bg-bilfen-blue text-white shadow-sm";
+            }
+
+            document.getElementById('m1ScenarioTitle').innerHTML = `<i class="fa-solid fa-puzzle-piece text-bilfen-red"></i> Senaryo Bulmacası (${scenarioData.stage}. Aşama)`;
+            document.getElementById('m1BadgeStep').innerText = scenarioData.badgeText;
+            document.getElementById('m1ScenarioText').innerHTML = scenarioData.text;
+
+            const targets = document.querySelectorAll('.m1-target');
+            targets.forEach(target => {
+                delete target.dataset.assignedType;
+                delete target.dataset.assignedToken;
+                target.className = "m1-target bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-3 text-center min-h-[110px] flex flex-col justify-center items-center transition-colors";
+                const slotContent = target.querySelector('.slot-content');
+                slotContent.innerHTML = 'Buraya Sürükle';
+                slotContent.className = 'slot-content font-semibold text-xs text-slate-400 py-2 w-full flex justify-center items-center';
+            });
+
+            const optionsBank = document.getElementById('m1-options');
+            optionsBank.innerHTML = '';
+            scenarioData.tokens.forEach(tok => {
+                const tokenEl = document.createElement('div');
+                tokenEl.id = tok.id;
+                tokenEl.draggable = true;
+                tokenEl.setAttribute('ondragstart', 'dragM1(event)');
+                tokenEl.dataset.type = tok.type;
+                tokenEl.className = `m1-token px-4 py-2 text-xs sm:text-sm font-bold rounded-xl border-2 transition-all flex items-center gap-2 cursor-grab shadow-sm active:cursor-grabbing select-none ${tok.bg}`;
+                tokenEl.innerHTML = `<i class="fa-solid ${tok.icon} pointer-events-none"></i> ${tok.label}`;
+                optionsBank.appendChild(tokenEl);
+            });
+        }
+
+        function resetCurrentM1Stage() {
+            initModule1Stage(appState.m1CurrentStage);
+        }
+
+        function dragM1(ev) {
+            const token = ev.target.closest('.m1-token');
+            if (token) {
+                ev.dataTransfer.setData("text/plain", token.id);
+                ev.dataTransfer.effectAllowed = "move";
+            }
+        }
+
+        function allowDropM1(ev) {
+            ev.preventDefault();
+            ev.dataTransfer.dropEffect = "move";
+            ev.currentTarget.classList.add('bg-amber-50', 'border-amber-400');
+        }
+
+        function leaveDropM1(ev) {
+            ev.currentTarget.classList.remove('bg-amber-50', 'border-amber-400');
+        }
+
+        function dropM1(ev) {
+            ev.preventDefault();
+            const target = ev.currentTarget;
+            target.classList.remove('bg-amber-50', 'border-amber-400');
+
+            const id = ev.dataTransfer.getData("text/plain");
+            const draggedEl = document.getElementById(id);
+            if (!draggedEl) return;
+
+            const prevTarget = draggedEl.closest('.m1-target');
+            if (prevTarget && prevTarget !== target) {
+                clearM1Slot(prevTarget);
+            }
+
+            const slotContent = target.querySelector('.slot-content');
+            const existingToken = slotContent.querySelector('.m1-token');
+            if (existingToken && existingToken !== draggedEl) {
+                document.getElementById('m1-options').appendChild(existingToken);
+            }
+
+            slotContent.innerHTML = '';
+            slotContent.appendChild(draggedEl);
+            slotContent.classList.remove('text-slate-400');
+
+            target.dataset.assignedType = draggedEl.dataset.type;
+            target.dataset.assignedToken = draggedEl.id;
+        }
+
+        function dropToBankM1(ev) {
+            ev.preventDefault();
+            const bank = ev.currentTarget;
+            bank.classList.remove('bg-amber-50', 'border-amber-400');
+
+            const id = ev.dataTransfer.getData("text/plain");
+            const draggedEl = document.getElementById(id);
+            if (!draggedEl) return;
+
+            const prevTarget = draggedEl.closest('.m1-target');
+            if (prevTarget) {
+                clearM1Slot(prevTarget);
+            }
+
+            bank.appendChild(draggedEl);
+        }
+
+        function clearM1Slot(target) {
+            delete target.dataset.assignedType;
+            delete target.dataset.assignedToken;
+            const slotContent = target.querySelector('.slot-content');
+            slotContent.innerHTML = 'Buraya Sürükle';
+            slotContent.classList.add('text-slate-400');
+        }
+
+        function checkModule1() {
+            const targets = document.querySelectorAll('.m1-target');
+            let correctCount = 0;
+
+            targets.forEach(target => {
+                const required = target.dataset.required;
+                const assigned = target.dataset.assignedType;
+
+                if (required && assigned && required === assigned) {
+                    correctCount++;
+                    target.classList.remove('border-dashed', 'border-slate-300', 'border-red-400');
+                    target.classList.add('border-solid', 'border-emerald-500', 'bg-emerald-50');
+                } else {
+                    target.classList.remove('border-dashed', 'border-slate-300', 'border-emerald-500');
+                    target.classList.add('border-solid', 'border-red-400', 'bg-red-50');
+                }
+            });
+
+            if (correctCount === 6) {
+                if (appState.m1CurrentStage === 1) {
+                    appState.m1Stage1Cleared = true;
+                    showModal(
+                        "1. Aşama Başarıyla Tamamlandı!",
+                        "Tebrikler! Senaryo 1'deki iletişim bileşenlerini ve gürültü ögesini eksiksiz ve doğru şekilde yerleştirdin. Şimdi 2. Aşamaya geçmeye hazırsın!",
+                        "fa-solid fa-circle-check",
+                        "bg-emerald-100 text-emerald-600",
+                        `<button onclick="goToStage2()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-fredoka font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                            2. Aşamaya Geç <i class="fa-solid fa-arrow-right"></i>
+                        </button>`
+                    );
+                } else {
+                    appState.m1Stage2Cleared = true;
+                    addXp(100, 'm1');
+                    showModal(
+                        "Tebrikler Dedektif! 1. Bölüm Tamamlandı!",
+                        "Her iki senaryodaki iletişim bileşenlerini (Gönderici, İleti, Kanal, Alıcı, Dönüt ve Gürültü) hatasız analiz ettin! <b>+100 XP</b> Kazandın.",
+                        "fa-solid fa-trophy",
+                        "bg-amber-100 text-amber-600",
+                        `<button onclick="finishModuleAndReturn('m1')" class="w-full bg-bilfen-navy hover:bg-slate-800 text-white font-fredoka font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-house text-bilfen-gold"></i> Ana Menüye Dön
+                        </button>`
+                    );
+                }
+            } else {
+                appState.stats.m1.errors++;
+                showModal("Eksik veya Hatalı Ögeler Var", `${6 - correctCount} adet öge yanlış veya boş yerleştirilmiş. Kırmızı renkli kutuları kontrol edip tekrar dene.`, "fa-solid fa-triangle-exclamation", "bg-rose-100 text-rose-600");
+            }
+        }
+
+        function goToStage2() {
+            closeModal();
+            initModule1Stage(2);
+        }
+
+        /* -------------------------------------------------------------------
+           MODULE 2 LOGIC: SENKRON VS. ASENKRON İLETİŞİM ARAÇLARI
+        ------------------------------------------------------------------- */
+        const m2Tools = [
+            { id: "tool-1", name: "Telefon Araması", type: "senkron", icon: "fa-phone-volume" },
+            { id: "tool-2", name: "E-Posta (Email)", type: "asenkron", icon: "fa-envelope" },
+            { id: "tool-3", name: "Canlı Görüntülü Görüşme", type: "senkron", icon: "fa-video" },
+            { id: "tool-4", name: "Çevrim içi Forum Paylaşımı", type: "asenkron", icon: "fa-comments" },
+            { id: "tool-5", name: "Anlık Mesajlaşma (Sohbet)", type: "senkron", icon: "fa-comment-dots" },
+            { id: "tool-6", name: "Mektup / Dilekçe", type: "asenkron", icon: "fa-paper-plane" }
+        ];
+
+        function initModule2Cards() {
+            const container = document.getElementById('m2-cards-container');
+            container.innerHTML = '';
+            
+            document.querySelector('#bucket-senkron .bucket-items').innerHTML = '';
+            document.querySelector('#bucket-asenkron .bucket-items').innerHTML = '';
+
+            m2Tools.forEach(tool => {
+                const card = document.createElement('div');
+                card.id = tool.id;
+                card.dataset.type = tool.type;
+                card.className = "m2-tool-card bg-slate-100 border-2 border-slate-300 hover:border-emerald-500 rounded-xl p-3 text-center cursor-pointer transition-all flex flex-col items-center gap-2 select-none hover:shadow-md";
+                card.innerHTML = `
+                    <i class="fa-solid ${tool.icon} text-xl text-slate-700"></i>
+                    <span class="text-xs font-bold text-slate-800 leading-tight">${tool.name}</span>
+                    <div class="flex gap-1 mt-1 w-full pt-1 border-t border-slate-200">
+                        <button onclick="moveToolToBucket('${tool.id}', 'senkron')" class="flex-1 text-[10px] font-bold bg-emerald-100 hover:bg-emerald-200 text-emerald-800 py-1 rounded">Senkron</button>
+                        <button onclick="moveToolToBucket('${tool.id}', 'asenkron')" class="flex-1 text-[10px] font-bold bg-indigo-100 hover:bg-indigo-200 text-indigo-800 py-1 rounded">Asenkron</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function moveToolToBucket(toolId, bucketType) {
+            const toolEl = document.getElementById(toolId);
+            if (!toolEl) return;
+
+            const toolObj = m2Tools.find(t => t.id === toolId);
+            if (!toolObj) return;
+
+            const existingBucketItem = document.querySelector(`[data-bucket-item="${toolId}"]`);
+            if (existingBucketItem) {
+                existingBucketItem.remove();
+            }
+
+            toolEl.classList.add('hidden');
+
+            const itemChip = document.createElement('div');
+            itemChip.dataset.bucketItem = toolId;
+            itemChip.dataset.type = toolObj.type;
+            itemChip.className = "bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm flex items-center gap-2";
+            itemChip.innerHTML = `
+                <i class="fa-solid ${toolObj.icon} text-slate-600"></i>
+                <span>${toolObj.name}</span>
+                <button onclick="removeToolFromBucket('${toolId}')" class="text-slate-400 hover:text-rose-600 ml-1">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            `;
+
+            const bucketTarget = document.querySelector(`#bucket-${bucketType} .bucket-items`);
+            if (bucketTarget) {
+                bucketTarget.appendChild(itemChip);
+            }
+        }
+
+        function removeToolFromBucket(toolId) {
+            const itemChip = document.querySelector(`[data-bucket-item="${toolId}"]`);
+            if (itemChip) {
+                itemChip.remove();
+            }
+            const toolEl = document.getElementById(toolId);
+            if (toolEl) {
+                toolEl.classList.remove('hidden');
+            }
+        }
+
+        function resetModule2() {
+            initModule2Cards();
+        }
+
+        function checkModule2() {
+            const senkronItems = document.querySelectorAll('#bucket-senkron [data-bucket-item]');
+            const asenkronItems = document.querySelectorAll('#bucket-asenkron [data-bucket-item]');
+
+            const totalCategorized = senkronItems.length + asenkronItems.length;
+            if (totalCategorized < m2Tools.length) {
+                showModal(
+                    "Eksik Gruplandırma",
+                    `Lütfen tüm iletişim araçlarını (${m2Tools.length} adet) Senkron veya Asenkron kutularına yerleştiriniz. Şu an ${totalCategorized}/${m2Tools.length} araç yerleştirildi.`,
+                    "fa-solid fa-triangle-exclamation",
+                    "bg-amber-100 text-amber-600"
+                );
+                return;
+            }
+
+            let errors = 0;
+            senkronItems.forEach(item => {
+                if (item.dataset.type !== 'senkron') errors++;
+            });
+            asenkronItems.forEach(item => {
+                if (item.dataset.type !== 'asenkron') errors++;
+            });
+
+            if (errors === 0) {
+                addXp(150, 'm2');
+                showModal(
+                    "Mükemmel! 2. Bölüm Tamamlandı!",
+                    "Tüm iletişim araçlarını Senkron (Eş Zamanlı) ve Asenkron (Farklı Zamanlı) olarak doğru gruplandırdın! <b>+150 XP</b> Kazandın.",
+                    "fa-solid fa-trophy",
+                    "bg-emerald-100 text-emerald-600",
+                    `<button onclick="finishModuleAndReturn('m2')" class="w-full bg-bilfen-navy hover:bg-slate-800 text-white font-fredoka font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-house text-bilfen-gold"></i> Ana Menüye Dön
+                    </button>`
+                );
+            } else {
+                appState.stats.m2.errors++;
+                showModal(
+                    "Hatalı Yerleşim Var",
+                    `${errors} adet iletişim aracı yanlış gruba yerleştirilmiş. Araçların anlık (aynı anda) mı yoksa farklı zamanlarda mı kullanıldığını düşünerek tekrar dene!`,
+                    "fa-solid fa-xmark",
+                    "bg-rose-100 text-rose-600"
+                );
+            }
+        }
+
+        /* -------------------------------------------------------------------
+           MODULE 3 LOGIC: E-POSTA SİMÜLATÖRÜ VE İLETİŞİM KURALLARI
+        ------------------------------------------------------------------- */
+        function sendEmailSimulation() {
+            const to = document.getElementById('selectTo').value;
+            const cc = document.getElementById('selectCc').value;
+            const subject = document.getElementById('selectSubject').value;
+            const body = document.getElementById('selectBody').value;
+            const attachment = document.getElementById('selectAttachment').value;
+
+            const feedbackEl = document.getElementById('emailFeedback');
+
+            if (!to || !subject || !body) {
+                feedbackEl.className = "text-xs font-bold text-rose-600";
+                feedbackEl.innerText = "Lütfen Alıcı, Konu ve Mesaj bölümlerini eksiksiz seçiniz!";
+                return;
+            }
+
+            let isToCorrect = (to === 'correct');
+            let isSubjectCorrect = (subject === 'correct');
+            let isBodyCorrect = (body === 'correct');
+            let isAttachmentCorrect = (attachment === 'correct');
+
+            if (isToCorrect && isSubjectCorrect && isBodyCorrect && isAttachmentCorrect) {
+                feedbackEl.className = "text-xs font-bold text-emerald-600";
+                feedbackEl.innerText = "E-posta başarıyla ve kurallara uygun olarak gönderildi!";
+
+                addXp(200, 'm3');
+                showModal(
+                    "Harika! E-Posta Başarıyla Gönderildi!",
+                    "Kurumsal e-posta adresi, anlaşılır konu başlığı, nezaketli mesaj içeriği ve uygun ödev dosya eki ile mükemmel bir e-posta hazırladın! <b>+200 XP</b> Kazandın.",
+                    "fa-solid fa-paper-plane",
+                    "bg-emerald-100 text-emerald-600",
+                    `<button onclick="finishModuleAndReturn('m3')" class="w-full bg-bilfen-navy hover:bg-slate-800 text-white font-fredoka font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-house text-bilfen-gold"></i> Ana Menüye Dön
+                    </button>`
+                );
+            } else {
+                appState.stats.m3.errors++;
+                feedbackEl.className = "text-xs font-bold text-rose-600";
+
+                let errorDetails = [];
+                if (!isToCorrect) errorDetails.push("<b>Alıcı Adresi:</b> Resmi/kurumsal e-posta adresi seçilmelidir.");
+                if (!isSubjectCorrect) errorDetails.push("<b>Konu Başlığı:</b> Ödevi ve adını açık net belirten bir konu seçilmelidir.");
+                if (!isBodyCorrect) errorDetails.push("<b>Mesaj İçeriği:</b> Saygılı hitap ve anlaşılır bir nezaket dili kullanılmalıdır.");
+                if (!isAttachmentCorrect) errorDetails.push("<b>Dosya Eki:</b> Doğru ve güvenli ders ödevi dosyası (.pdf) eklenmelidir.");
+
+                showModal(
+                    "E-Posta Gönderilemedi / Hatalar Var",
+                    `<p class="mb-2">Aşağıdaki hususları gözden geçirip tekrar dene:</p><ul class="text-left text-xs space-y-1 bg-rose-50 p-3 rounded-xl border border-rose-200">${errorDetails.map(e => `<li>• ${e}</li>`).join('')}</ul>`,
+                    "fa-solid fa-triangle-exclamation",
+                    "bg-rose-100 text-rose-600"
+                );
+            }
+        }
+
+        /* -------------------------------------------------------------------
+           MODULE 4 LOGIC: KULLANIM AMACINA UYGUNLUK LABORATUVARI
+        ------------------------------------------------------------------- */
+        function renderM4Scenario(stepNum) {
+            appState.m4CurrentStep = stepNum;
+            appState.m4SelectedOption = appState.m4StepAnswers[stepNum - 1] || null;
+
+            const dotsContainer = document.getElementById('m4StepDots');
+            dotsContainer.innerHTML = '';
+
+            m4ScenariosData.forEach((sc, idx) => {
+                const num = idx + 1;
+                const isCurrent = (num === stepNum);
+                const isDone = appState.m4StepConfirmed[idx];
+
+                let dotClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ";
+                if (isCurrent) {
+                    dotClass += "bg-purple-600 text-white ring-4 ring-purple-200 shadow-md";
+                } else if (isDone) {
+                    dotClass += "bg-emerald-500 text-white cursor-pointer";
+                } else {
+                    dotClass += "bg-slate-200 text-slate-500 cursor-pointer";
+                }
+
+                const dot = document.createElement('button');
+                dot.className = dotClass;
+                dot.innerText = num;
+                dot.onclick = () => {
+                    renderM4Scenario(num);
+                };
+                dotsContainer.appendChild(dot);
+            });
+
+            const currentData = m4ScenariosData[stepNum - 1];
+            const scenarioBox = document.getElementById('m4ScenarioBox');
+
+            const optionsHtml = currentData.options.map(opt => {
+                const isSelected = (appState.m4SelectedOption === opt.key);
+                let borderClass = isSelected ? "border-purple-600 bg-purple-50/80 shadow-md ring-2 ring-purple-300" : "border-slate-200 bg-slate-50 hover:bg-slate-100";
+
+                return `
+                    <div onclick="selectM4Option('${opt.key}')" class="p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-3 ${borderClass}">
+                        <div class="w-8 h-8 rounded-xl ${isSelected ? 'bg-purple-600 text-white' : 'bg-slate-200 text-slate-700'} font-bold text-xs flex items-center justify-center flex-shrink-0">
+                            ${opt.key}
+                        </div>
+                        <span class="text-xs sm:text-sm font-semibold text-slate-800">${opt.text}</span>
+                    </div>
+                `;
+            }).join('');
+
+            const isLastStep = (stepNum === m4ScenariosData.length);
+
+            scenarioBox.innerHTML = `
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold border ${currentData.tagBg} flex items-center gap-1.5">
+                        <i class="fa-solid ${currentData.icon}"></i> ${currentData.tag}
+                    </span>
+                    <span class="text-xs font-bold text-slate-400">Adım ${stepNum} / ${m4ScenariosData.length}</span>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-fredoka text-lg sm:text-xl font-bold text-slate-800">
+                        ${currentData.title}
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        ${currentData.desc}
+                    </p>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    ${optionsHtml}
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3">
+                    ${stepNum > 1 ? `
+                        <button onclick="renderM4Scenario(${stepNum - 1})" class="text-xs font-bold text-slate-600 hover:text-purple-700 flex items-center gap-1 bg-slate-100 px-3 py-2 rounded-xl">
+                            <i class="fa-solid fa-arrow-left"></i> Önceki Adım
+                        </button>
+                    ` : '<div></div>'}
+
+                    <button onclick="confirmM4Step()" class="bg-purple-600 hover:bg-purple-700 text-white font-fredoka font-bold px-6 py-2.5 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center gap-2">
+                        ${isLastStep ? 'Seçimi Onayla ve Modülü Tamamla <i class="fa-solid fa-trophy text-amber-300"></i>' : 'Seçimi Onayla ve Sonraki Adıma Geç <i class="fa-solid fa-arrow-right"></i>'}
+                    </button>
+                </div>
+            `;
+        }
+
+        function selectM4Option(optKey) {
+            appState.m4SelectedOption = optKey;
+            appState.m4StepAnswers[appState.m4CurrentStep - 1] = optKey;
+            renderM4Scenario(appState.m4CurrentStep);
+        }
+
+        function confirmM4Step() {
+            const stepNum = appState.m4CurrentStep;
+            const currentData = m4ScenariosData[stepNum - 1];
+            const selected = appState.m4SelectedOption;
+
+            if (!selected) {
+                showModal(
+                    "Seçim Yapılmadı",
+                    "Lütfen devam etmek için seçeneklerden birini işaretleyiniz.",
+                    "fa-solid fa-hand-pointer",
+                    "bg-amber-100 text-amber-600"
+                );
+                return;
+            }
+
+            if (selected === currentData.correctKey) {
+                appState.m4StepConfirmed[stepNum - 1] = true;
+
+                if (stepNum < m4ScenariosData.length) {
+                    showModal(
+                        "Doğru Karar! 👏",
+                        `<b>${currentData.tag}</b> için en uygun iletişim aracını doğru tespit ettin. Sıradaki adıma geçebilirsin.`,
+                        "fa-solid fa-circle-check",
+                        "bg-emerald-100 text-emerald-600",
+                        `<button onclick="closeModalAndNextM4Step(${stepNum + 1})" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-fredoka font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                            Sonraki Adıma Geç <i class="fa-solid fa-arrow-right"></i>
+                        </button>`
+                    );
+                } else {
+                    addXp(150, 'm4');
+                    showModal(
+                        "Tebrikler! 4. Bölüm Tamamlandı!",
+                        "Tüm senaryolarda iletişim araçlarını durum, aciliyet ve ortama en uygun şekilde değerlendirdin! <b>+150 XP</b> Kazandın.",
+                        "fa-solid fa-trophy",
+                        "bg-amber-100 text-amber-600",
+                        `<button onclick="finishModuleAndReturn('m4')" class="w-full bg-bilfen-navy hover:bg-slate-800 text-white font-fredoka font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-house text-bilfen-gold"></i> Ana Menüye Dön
+                        </button>`
+                    );
+                }
+            } else {
+                appState.stats.m4.errors++;
+                showModal(
+                    "Uygun Olmayan Seçim",
+                    "Seçtiğin araç bu senaryodaki aciliyet, resmiyet veya ortak kullanım ihtiyacına tam olarak uymuyor. Durumu tekrar değerlendirip yeniden dene!",
+                    "fa-solid fa-triangle-exclamation",
+                    "bg-rose-100 text-rose-600"
+                );
+            }
+        }
+
+        function closeModalAndNextM4Step(nextStep) {
+            closeModal();
+            renderM4Scenario(nextStep);
+        }
+    </script>
+</body>
+</html>
